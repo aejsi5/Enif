@@ -85,11 +85,13 @@ class Chatbot_Api(APIView):
                 #2. Intent aus dieser Herausnehmen
                 #3. Je nach Intent eine Funktion im Chatbot ansprechen
                 if req.Intent:
-                    ans = self.intent_handler(s, req.Intent.ID)
+                    self.intent_handler(s, req.Intent.ID)
                 else: 
-                    ans = self.intent_handler(s, None)
+                    self.intent_handler(s, None)
         #5. komplette His rendern
         res["Enif"]["Messages"] = self.his_renderer(s)
+        if req.Intent.Tag in ['contact']:
+            res["Enif"]["Messages"].append(self.dialog(req.Intent.Tag))
         return Response(res, status=status.HTTP_200_OK)
 
     def his_renderer(self, session):
@@ -108,7 +110,6 @@ class Chatbot_Api(APIView):
         return res
 
     def intent_handler(self, session, intent):
-        res = []
         #4. Die Antwort auf den Intent in die His schreiben
         intent = Intent.objects.get(ID=intent, D=False)
         intent_tag = intent.Tag
@@ -117,17 +118,12 @@ class Chatbot_Api(APIView):
             i = random.choice(options)
             his = Enif_Session_History(Session=session, Intent_Answer=i)
             his.save()
-            res.append({"ID": his.pk, "Source": "Enif", "Text": his.Intent_Answer.Answer, "Timestamp": his.Inserted})
         except IndexError:
             not_understood =[10,11,12]
             i = random.choice(not_understood)
             Ans = Enif_System_Answer.objects.get(ID=i, D=False)
             his = Enif_Session_History(Session=session, Enif_System_Answer=Ans)
             his.save()
-            res.append({"ID": his.pk, "Source": "Enif", "Text": Ans.Answer, "Timestamp": his.Inserted})
-        if intent_tag in ['contact']:
-            res.append(self.dialog(intent_tag))
-        return res
 
     def dialog(self, intenttag):
         if intenttag == "contact":
