@@ -45,6 +45,7 @@ $(document).ready(function (){
     });
     $('.enif_privacy_accept').click(function(){
         E.initiate();
+        $('.enif_mes_input').focus();
         $('.enif_message_privacy').hide();
     });
 });
