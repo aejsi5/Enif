@@ -173,10 +173,10 @@ class Enif{
     }
     render_options(options){
         var $wrapper = $("<div class='enif_options_wrapper'></div>");
-        var $markup = $("<div class='enif_option'>" +
+        var $markup = $("<div><div class='enif_option'>" +
             "<i></i>" +
             "<span class='enif_options_text'></span>" +
-            "</div>");
+            "</div></div>");
         for(var i in options){
             $markup.find('i').addClass(i.Symbol)
             $markup.find('.enif_options_text').text(i.Text)
@@ -193,6 +193,7 @@ class Enif{
                     this.mids.push(this.Enif.Messages[i].ID);
                 }
                 if (this.Enif.Messages[i].Source == "Enif" && this.Enif.Messages[i].Message_Type == "Options") {
+                    console.log(this.Enif.Messages[i].Options)
                     this.render_options(this.Enif.Messages[i].Options)
                 }
             }
