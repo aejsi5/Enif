@@ -178,12 +178,18 @@ class Enif{
             "<span class='enif_options_text'></span>" +
             "</div></div>");
         for(var i in options){
-            $markup.find('i').addClass(i.Symbol)
-            $markup.find('.enif_options_text').text(i.Text)
-            $markup.find('.enif_options_text').data("intent_id",i.Intent)
+            $markup.find('i').addClass(options[i].Symbol)
+            $markup.find('.enif_options_text').text(options[i].Text)
+            $markup.find('.enif_options_text').data("intent_id", options[i].Intent)
+            console.log($markup)
+            $markup = $("<div><div class='enif_option'>" +
+                "<i></i>" +
+                "<span class='enif_options_text'></span>" +
+                "</div></div>");
             $wrapper.append($markup)
         }
         console.log($wrapper)
+        return $wrapper
     }
     render(){
         for(var i in this.Enif.Messages){
@@ -193,8 +199,7 @@ class Enif{
                     this.mids.push(this.Enif.Messages[i].ID);
                 }
                 if (this.Enif.Messages[i].Source == "Enif" && this.Enif.Messages[i].Message_Type == "Options") {
-                    console.log(this.Enif.Messages[i].Options)
-                    this.render_options(this.Enif.Messages[i].Options)
+                    $('.enif_messages_div').append(this.render_options(this.Enif.Messages[i].Options));
                 }
             }
         }
