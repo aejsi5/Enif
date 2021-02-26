@@ -171,12 +171,29 @@ class Enif{
         }
         return $markup
     }
+    render_options(options){
+        var $wrapper = $("<div class='enif_options_wrapper'></div>");
+        var $markup = $("<div class='enif_option'>" +
+            "<i></i>" +
+            "<span class='enif_options_text'></span>" +
+            "</div>");
+        for(var i in options){
+            $markup.find('i').addClass(i.Symbol)
+            $markup.find('.enif_options_text').text(i.Text)
+            $markup.find('.enif_options_text').data("intent_id",i.Intent)
+            $wrapper.append($markup)
+        }
+        console.log($wrapper)
+    }
     render(){
         for(var i in this.Enif.Messages){
             if (!this.mids.includes(this.Enif.Messages[i].ID || this.Enif.Messages[i].ID == null )){
-                if (this.Enif.Messages[i].Source == "Enif"){
+                if (this.Enif.Messages[i].Source == "Enif" && this.Enif.Messages[i].Message_Type == "PlainText"){
                     $('.enif_messages_div').append(this.markup(this.Enif.Messages[i].Source, this.Enif.Messages[i].Text, this.Enif.Messages[i].Timestamp));
                     this.mids.push(this.Enif.Messages[i].ID);
+                }
+                if (this.Enif.Messages[i].Source == "Enif" && this.Enif.Messages[i].Message_Type == "Options") {
+                    this.render_options(this.Enif.Messages[i].Options)
                 }
             }
         }

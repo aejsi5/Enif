@@ -102,11 +102,11 @@ class Chatbot_Api(APIView):
             return res
         for h in his:
             if h.Request:
-                res.append({"ID": h.pk, "Source": "User", "Text": h.Request.Pattern, "Timestamp": h.Inserted})
+                res.append({"ID": h.pk, "Source": "User", "Message_Type": "PlainText", "Text": h.Request.Pattern, "Timestamp": h.Inserted})
             elif h.Intent_Answer:
-                res.append({"ID": h.pk, "Source": "Enif", "Text": h.Intent_Answer.Answer, "Timestamp": h.Inserted})
+                res.append({"ID": h.pk, "Source": "Enif", "Message_Type": "PlainText", "Text": h.Intent_Answer.Answer, "Timestamp": h.Inserted})
             elif h.Enif_System_Answer:
-                res.append({"ID": h.pk, "Source": "Enif", "Text": h.Enif_System_Answer.Answer, "Timestamp": h.Inserted})
+                res.append({"ID": h.pk, "Source": "Enif", "Message_Type": "PlainText", "Text": h.Enif_System_Answer.Answer, "Timestamp": h.Inserted})
         return res
 
     def intent_handler(self, session, intent):
