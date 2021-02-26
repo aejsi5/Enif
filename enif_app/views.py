@@ -110,18 +110,8 @@ class Chatbot_Api(APIView):
     def intent_handler(self, session, intent):
         res = []
         #4. Die Antwort auf den Intent in die His schreiben
-        if not intent:
-            not_understood =[10,11,12]
-            i = random.choice(not_understood)
-            Ans = Enif_System_Answer.objects.get(ID=i, D=False)
-            his = Enif_Session_History(Session=session, Enif_System_Answer=Ans)
-            his.save()
-            res.append({"ID": his.pk, "Source": "Enif", "Text": Ans.Answer, "Timestamp": his.Inserted})
-            intent = Intent.objects.get(Tag='help_enif', D=False)
-            intent_tag = 'help_enif'
-        else:
-            intent = Intent.objects.get(ID=intent, D=False)
-            intent_tag = intent.Tag
+        intent = Intent.objects.get(ID=intent, D=False)
+        intent_tag = intent.Tag
         try:
             options = Enif_Intent_Answer.objects.filter(Intent=intent, D=False)
             i = random.choice(options)
@@ -135,6 +125,8 @@ class Chatbot_Api(APIView):
             his = Enif_Session_History(Session=session, Enif_System_Answer=Ans)
             his.save()
             res.append({"ID": his.pk, "Source": "Enif", "Text": Ans.Answer, "Timestamp": his.Inserted})
+        if intent_tag in ['contact']:
+            res.append(self.dialog(intent_tag))
         return res
 
     def dialog(self, intenttag):
@@ -146,23 +138,33 @@ class Chatbot_Api(APIView):
                 "Options": [
                     {
                         "Text": "Fz bis 2,8t",
-                        "Intent": None,
-                        "Symbol": "fa-truck"
+                        "Intent": 11,
+                        "Symbol": "fas fa-truck"
                     },
                     {
                         "Text": "Fz über 2,8t",
-                        "Intent": None,
-                        "Symbol": "fa-truck-moving"
+                        "Intent": 12,
+                        "Symbol": "fas fa-truck-moving"
                     },
                     {
                         "Text": "Wechselbehälter",
-                        "Intent": None,
+                        "Intent": 15,
                         "Symbol": None
                     },
                     {
                         "Text": "Werkstattportal",
-                        "Intent": None,
-                        "Symbol": "fa-toolbox"
+                        "Intent": 14,
+                        "Symbol": "fas fa-toolbox"
+                    },
+                    {
+                        "Text": "Firmenwagen",
+                        "Intent": 13,
+                        "Symbol": "fas fa-car-side"
+                    },
+                    {
+                        "Text": "Rechnungen",
+                        "Intent": 16,
+                        "Symbol": "fas fa-file-invoice-dollar"
                     }
             ]}
 
