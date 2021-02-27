@@ -173,19 +173,16 @@ class Enif{
     }
     render_options(options){
         var $wrapper = $("<div class='enif_options_wrapper'></div>");
-        var $markup = $("<div><div class='enif_option'>" +
-            "<i></i>" +
-            "<span class='enif_options_text'></span>" +
-            "</div></div>");
+        var $markup = null;
         for(var i in options){
-            $markup.find('i').addClass(options[i].Symbol)
-            $markup.find('.enif_options_text').text(options[i].Text)
-            $markup.find('.enif_options_text').data("intent_id", options[i].Intent)
-            console.log($markup)
             $markup = $("<div><div class='enif_option'>" +
                 "<i></i>" +
                 "<span class='enif_options_text'></span>" +
                 "</div></div>");
+            $markup.find('i').addClass(options[i].Symbol)
+            $markup.find('.enif_options_text').text(options[i].Text)
+            $markup.find('.enif_options_text').data("intent_id", options[i].Intent)
+            console.log($markup)
             $wrapper.append($markup)
         }
         console.log($wrapper)
