@@ -43,6 +43,11 @@ $(document).ready(function (){
             $(".enif_mes_input").val(null);
         }
     });
+    $('enif_option').click(function(){
+        var intent = $(this).data("intent_id");
+        console.log(intent);
+        E.post(null, false, null, intent);
+    })
     $('.enif_privacy_accept').click(function(){
         E.initiate();
         $('.enif_mes_input').focus();
@@ -126,7 +131,7 @@ class Enif{
             timeout: 120000,
         });
     }
-    post(pattern, predict, user_feedback) {
+    post(pattern, predict, user_feedback, intent = null) {
         this.check_session();
         let that = this;
         $('.enif_loader').removeClass('hide');
@@ -135,7 +140,7 @@ class Enif{
         $.ajax({
             type: 'POST',
             headers: { "X-CSRFToken": this.csrf },
-            data: { "Pattern": pattern, "Predict": predict, "User_Feedback": user_feedback},
+            data: { "Pattern": pattern, "Predict": predict, "Intent": intent, "User_Feedback": user_feedback},
             url: '/api/v1/request/' + this.Session.Token + "/",
             success: function (result, status, xhr) {
                 that.get()
@@ -175,13 +180,13 @@ class Enif{
         var $wrapper = $("<div class='enif_options_wrapper'></div>");
         var $markup = null;
         for(var i in options){
-            $markup = $("<div class='enif_option'>" +
+            $markup = $("<div class='enif_option' data-intent_id=''>" +
                 "<i class='enif_option_i'></i>" +
                 "<span class='enif_options_text'></span>" +
                 "</div>");
             $markup.find('i').addClass(options[i].Symbol)
             $markup.find('.enif_options_text').text(options[i].Text)
-            $markup.find('.enif_options_text').data("intent_id", options[i].Intent)
+            $markup.find('.enif_option').data("intent_id", options[i].Intent)
             console.log($markup)
             $wrapper.append($markup)
         }
