@@ -283,8 +283,18 @@ body{
 }
 .enif_option{
     margin-right: 10px;
+    margin-bottom: 6px;
     cursor: pointer;
     border: 1px solid rgb(217,5,0);
     border-radius: 10px;
     padding: 3px;
+}
+.enif_option:hover{
+    background-color: #ffcc00;
+    border: 1.5px solid rgb(217,5,0);
+    -webkit-box-shadow: 0px 2px 5px 4px rgba(0,0,0,0.52); 
+    box-shadow: 0px 2px 5px 4px rgba(0,0,0,0.52);
+}
+.enif_option_i{
+    margin-right: 6px;
 }

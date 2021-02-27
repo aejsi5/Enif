@@ -176,7 +176,7 @@ class Enif{
         var $markup = null;
         for(var i in options){
             $markup = $("<div class='enif_option'>" +
-                "<i></i>" +
+                "<i class='enif_option_i'></i>" +
                 "<span class='enif_options_text'></span>" +
                 "</div>");
             $markup.find('i').addClass(options[i].Symbol)
