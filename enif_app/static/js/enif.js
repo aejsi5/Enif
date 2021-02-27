@@ -43,7 +43,7 @@ $(document).ready(function (){
             $(".enif_mes_input").val(null);
         }
     });
-    $('enif_option').click(function(){
+    $('.enif_option').click(function(){
         var intent = $(this).data("intent_id");
         console.log(intent);
         E.post(null, false, null, intent);
