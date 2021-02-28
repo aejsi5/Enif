@@ -154,7 +154,7 @@ class Chatbot_Api(APIView):
                     {
                         "Text": "Wechselbehälter",
                         "Intent": 15,
-                        "Symbol": None
+                        "Symbol": "fas fa-truck-loading"
                     },
                     {
                         "Text": "Werkstattportal",
@@ -172,6 +172,26 @@ class Chatbot_Api(APIView):
                         "Symbol": "fas fa-file-invoice-dollar"
                     }
             ]}
+        elif intenttag == 'invoice':
+            return {
+                "ID": None,
+                "Source": "Enif",
+                "Message_Type": "Inputs",
+                "Inputs": [
+                    {
+                        "Label": "AKZ/IKZ",
+                        "Intent": 18,
+                        "Type": 'Text',
+                        "Name": "enif_input_akz"
+                    },
+                    {
+                        "Label": "Rechnungsnummer",
+                        "Intent": 18,
+                        "Type": "text",
+                        "Name": "enif_input_rechnungsnummer"
+                    }
+                ]}
+
 
     def do_predict(self, Enif_Request_Obj):
         base_dir = settings.MEDIA_ROOT

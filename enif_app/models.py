@@ -118,7 +118,7 @@ class Enif_Request(models.Model):
 class Enif_Intent_Answer(models.Model):
     ID = models.AutoField('ID', primary_key=True)
     Intent = models.ForeignKey(Intent, on_delete=models.CASCADE, null=True, blank=True)
-    Answer = models.CharField('Antwort', max_length=255, null=True, blank=True)
+    Answer = models.TextField('Antwort', null=True, blank=True)
     Inserted = models.DateTimeField('Angelegt am', auto_now_add=True)
     LU = models.DateTimeField('Geändert am', auto_now=True)
     D = models.BooleanField('Gelöscht', default=False)
