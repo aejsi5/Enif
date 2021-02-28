@@ -46,8 +46,10 @@ $(document).ready(function (){
     $(document).on("click", "div.enif_option", function(){
         console.log("clicked");
         var intent = $(this).data("intent_id");
+        var text = $(this).find('.enif_options_text').text();
         console.log(intent);
-        E.post(null, false, null, intent);
+        console.log(text);
+        E.post(text, false, null, intent);
     });
     $('.enif_privacy_accept').click(function(){
         E.initiate();
