@@ -197,6 +197,23 @@ class Enif{
         console.log($wrapper)
         return $wrapper
     }
+    render_inputs(input_fields){
+        var $wrapper = $("<div class='enif_inputs_wrapper'></div>");
+        var $markup = null;
+        for (var i in input_fields) {
+            $markup = $("<div class='enif_inputs'>" +
+                "<input class='enif_input' type='' placeholder='' name='' data-intent_id=''></input>" +
+                "</div>");
+            $markup.find('input.enif_input').attr('type', input_fields[i].Type);
+            $markup.find('input.enif_input').attr('placeholder', input_fields[i].Placeholder);
+            $markup.find('input.enif_input').attr('name', input_fields[i].Name);
+            $markup.find('input.enif_input').attr('data-intent_id', input_fields[i].Intent);
+            console.log($markup);
+            $wrapper.append($markup);
+        }
+        console.log($wrapper);
+        return $wrapper
+    }
     render(){
         for(var i in this.Enif.Messages){
             if (!this.mids.includes(this.Enif.Messages[i].ID || this.Enif.Messages[i].ID == null )){
@@ -206,6 +223,9 @@ class Enif{
                 }
                 if (this.Enif.Messages[i].Source == "Enif" && this.Enif.Messages[i].Message_Type == "Options") {
                     $('.enif_messages_div').append(this.render_options(this.Enif.Messages[i].Options));
+                }
+                if (this.Enif.Messages[i].Source == "Enif" && this.Enif.Messages[i].Message_Type == "Inputs") {
+                    $('.enif_messages_div').append(this.render_options(this.Enif.Messages[i].Inputs));
                 }
             }
         }

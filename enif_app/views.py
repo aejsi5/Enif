@@ -179,13 +179,13 @@ class Chatbot_Api(APIView):
                 "Message_Type": "Inputs",
                 "Inputs": [
                     {
-                        "Label": "AKZ/IKZ",
+                        "Placeholder": "AKZ/IKZ",
                         "Intent": 18,
                         "Type": 'Text',
                         "Name": "enif_input_akz"
                     },
                     {
-                        "Label": "Rechnungsnummer",
+                        "Placeholder": "Rechnungsnummer",
                         "Intent": 18,
                         "Type": "text",
                         "Name": "enif_input_rechnungsnummer"
