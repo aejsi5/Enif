@@ -198,16 +198,16 @@ class Enif{
         return $wrapper
     }
     render_inputs(input_fields){
-        var $wrapper = $("<div class='enif_inputs_wrapper'></div>");
+        var $wrapper = $("<div class='enif_input_field_wrapper'></div>");
         var $markup = null;
         for (var i in input_fields) {
-            $markup = $("<div class='enif_inputs'>" +
-                "<input class='enif_input' type='' placeholder='' name='' data-intent_id=''></input>" +
+            $markup = $("<div class='enif_input_field'>" +
+                "<input class='enif_input_field' type='' placeholder='' name='' data-intent_id=''></input>" +
                 "</div>");
-            $markup.find('input.enif_input').attr('type', input_fields[i].Type);
-            $markup.find('input.enif_input').attr('placeholder', input_fields[i].Placeholder);
-            $markup.find('input.enif_input').attr('name', input_fields[i].Name);
-            $markup.find('input.enif_input').attr('data-intent_id', input_fields[i].Intent);
+            $markup.find('input.enif_input_field').attr('type', input_fields[i].Type);
+            $markup.find('input.enif_input_field').attr('placeholder', input_fields[i].Placeholder);
+            $markup.find('input.enif_input_field').attr('name', input_fields[i].Name);
+            $markup.find('input.enif_input_field').attr('data-intent_id', input_fields[i].Intent);
             console.log($markup);
             $wrapper.append($markup);
         }
