@@ -161,7 +161,7 @@ body{
 }
 .enif_message_info{
     position: absolute;
-    bottom: -1px;
+    bottom: -2px;
     right: 6px;
     font-size: 10px;
     font-style: italic;

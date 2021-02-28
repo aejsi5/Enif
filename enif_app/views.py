@@ -19,9 +19,15 @@ from .permissions import *
 from .preprocessing import *
 from datetime import datetime, timedelta
 from decimal import Decimal
+import logging
+log = logging.getLogger(__name__)
 
 # Create your views here.
 def index(request):
+    log.debug("Hey there it works!!")
+    log.info("Hey there it works!!")
+    log.warn("Hey there it works!!")
+    log.error("Hey there it works!!")
     return render(request, 'enif.html')
 
 
