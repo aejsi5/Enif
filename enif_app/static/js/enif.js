@@ -45,7 +45,7 @@ $(document).ready(function (){
     });
     $(document).on("click", "div.enif_option", function(){
         console.log("clicked");
-        var intent = $(this).data("intent_id");
+        var intent = $(this).find('.enif_options_text').data("intent_id");
         var text = $(this).find('.enif_options_text').text();
         console.log(intent);
         console.log(text);
@@ -183,13 +183,14 @@ class Enif{
         var $wrapper = $("<div class='enif_options_wrapper'></div>");
         var $markup = null;
         for(var i in options){
-            $markup = $("<div class='enif_option' data-intent_id=''>" +
+            $markup = $("<div class='enif_option'>" +
                 "<i class='enif_option_i'></i>" +
-                "<span class='enif_options_text'></span>" +
+                "<span class='enif_options_text' data-intent_id=''></span>" +
                 "</div>");
             $markup.find('i').addClass(options[i].Symbol)
             $markup.find('.enif_options_text').text(options[i].Text)
-            $markup.find('.enif_option').attr("data-intent_id", options[i].Intent)
+            console.log(options[i].Intent)
+            $markup.find('.enif_options_text').attr("data-intent_id", options[i].Intent)
             console.log($markup)
             $wrapper.append($markup)
         }
