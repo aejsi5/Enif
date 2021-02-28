@@ -225,7 +225,7 @@ class Enif{
                     $('.enif_messages_div').append(this.render_options(this.Enif.Messages[i].Options));
                 }
                 if (this.Enif.Messages[i].Source == "Enif" && this.Enif.Messages[i].Message_Type == "Inputs") {
-                    $('.enif_messages_div').append(this.render_options(this.Enif.Messages[i].Inputs));
+                    $('.enif_messages_div').append(this.render_inputs(this.Enif.Messages[i].Inputs));
                 }
             }
         }
