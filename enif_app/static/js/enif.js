@@ -44,12 +44,18 @@ $(document).ready(function (){
         }
     });
     $(document).on("click", "div.enif_option", function(){
-        console.log("clicked");
         var intent = $(this).find('.enif_options_text').data("intent_id");
         var text = $(this).find('.enif_options_text').text();
-        console.log(intent);
-        console.log(text);
         E.post(text, false, null, intent);
+    });
+    $(document).on("click", "div.enif_input_field_send", function(){
+        console.log("clicked");
+        var data = {}
+        $('input.enif_input_field').each(function(){
+            console.log(this);
+            data[this.attr('name')] = this.val();
+        })
+        console.log(data);
     });
     $('.enif_privacy_accept').click(function(){
         E.initiate();
@@ -208,10 +214,9 @@ class Enif{
             $markup.find('input.enif_input_field').attr('placeholder', input_fields[i].Placeholder);
             $markup.find('input.enif_input_field').attr('name', input_fields[i].Name);
             $markup.find('input.enif_input_field').attr('data-intent_id', input_fields[i].Intent);
-            console.log($markup);
             $wrapper.append($markup);
         }
-        console.log($wrapper);
+        $wrapper.append($('<div class="enif_input_field_send"></div>'))
         return $wrapper
     }
     render(){

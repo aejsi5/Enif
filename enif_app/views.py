@@ -185,7 +185,7 @@ class Chatbot_Api(APIView):
                         "Name": "enif_input_akz"
                     },
                     {
-                        "Placeholder": "Rechnungsnummer",
+                        "Placeholder": "Rg-Nr",
                         "Intent": 18,
                         "Type": "text",
                         "Name": "enif_input_rechnungsnummer"
