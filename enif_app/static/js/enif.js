@@ -52,8 +52,8 @@ $(document).ready(function (){
         console.log("clicked");
         var data = {}
         $('input.enif_input_field').each(function(){
-            console.log(this);
-            data[this.attr('name')] = this.val();
+            console.log($(this));
+            data[$(this).attr('name')] = $(this).val();
         })
         console.log(data);
     });
@@ -216,7 +216,7 @@ class Enif{
             $markup.find('input.enif_input_field').attr('data-intent_id', input_fields[i].Intent);
             $wrapper.append($markup);
         }
-        $wrapper.append($('<div class="enif_input_field_send"></div>'))
+        $wrapper.append($('<div class="enif_input_field_send"><span>Senden</span></div>'))
         return $wrapper
     }
     render(){
