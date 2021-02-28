@@ -24,10 +24,10 @@ log = logging.getLogger(__name__)
 
 # Create your views here.
 def index(request):
-    log.debug("Hey there it works!!")
-    log.info("Hey there it works!!")
-    log.warn("Hey there it works!!")
-    log.error("Hey there it works!!")
+    #log.debug("Hey there it works!!")
+    #log.info("Hey there it works!!")
+    #log.warn("Hey there it works!!")
+    #log.error("Hey there it works!!")
     return render(request, 'enif.html')
 
 
@@ -38,8 +38,10 @@ def run_DNN_Admin(request, *args, **kwargs):
             I.start_preprocessing()
             I.start_dnn_modeling()
         except:
+            log.error('Error while Preprocessing')
             HttpResponse(status=400)
         return HttpResponse(status=200)
+    log.error('Permission denied')
     return HttpResponse(status=403)
 
 class DNN_Admin():
@@ -78,6 +80,7 @@ class Chatbot_Api(APIView):
                 "Valid_Until": s.Valid_Until
             }
         except Enif_Session.DoesNotExist:
+            log.error('Session does not exist')
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         mes = Enif_Session_History.objects.filter(Session=s, D=False).order_by('Inserted')
         if not mes:
@@ -260,8 +263,11 @@ class Enif_Session_Api(APIView):
                 }
                 return Response(res, status=status.HTTP_200_OK)
             else:
+                log.error('Serializer Errors')
+                log.error(serializer.errors)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except:
+            log.error('Domain not allowed')
             return HttpResponse(status=404)
 
     def put(self, request, token=None, *args, **kwargs):
@@ -273,6 +279,7 @@ class Enif_Session_Api(APIView):
             s.Valid_Until = act
             s.save()
         except Enif_Session.DoesNotExist:
+            log.error('Session does not exist')
             return HttpResponse(status=404)
         serializer = Enif_Session_Serializer(s, many=False)
         res = {
@@ -330,7 +337,7 @@ class Enif_Request_Api(APIView):
             s.Valid_Until = datetime.now() + timedelta(minutes=5)
             s.save()
         else:
-            print(serializer.errors)
+            log.error(serializer.errors)
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if enif_r.Predict:
             prediction = Chatbot_Api().do_predict(enif_r)
