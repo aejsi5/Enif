@@ -43,11 +43,12 @@ $(document).ready(function (){
             $(".enif_mes_input").val(null);
         }
     });
-    $('.enif_option').click(function(){
+    $(document).on("click", "div.enif_option", function(){
+        console.log("clicked");
         var intent = $(this).data("intent_id");
         console.log(intent);
         E.post(null, false, null, intent);
-    })
+    });
     $('.enif_privacy_accept').click(function(){
         E.initiate();
         $('.enif_mes_input').focus();
@@ -186,7 +187,7 @@ class Enif{
                 "</div>");
             $markup.find('i').addClass(options[i].Symbol)
             $markup.find('.enif_options_text').text(options[i].Text)
-            $markup.find('.enif_option').data("intent_id", options[i].Intent)
+            $markup.find('.enif_option').attr("data-intent_id", options[i].Intent)
             console.log($markup)
             $wrapper.append($markup)
         }
