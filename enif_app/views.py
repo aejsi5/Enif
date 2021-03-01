@@ -429,8 +429,7 @@ class Enif_Request_Api(APIView):
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
         else:
-            log.info("Mit unerstrich")
-            log.info(dict(request.POST._iterlists()))
+            log.info(request.POST.get('Inputs'))
             if rdata['Inputs']:
                 log.info('Input-Handler')
                 i = Intent.objects.get(ID=rdata['Intent'])
