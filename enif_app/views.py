@@ -91,12 +91,12 @@ class Chatbot_Api(APIView):
             rhis = Enif_Session_History.objects.filter(Session=s, D=False, Intent_Answer=None, Enif_System_Answer=None, Enif_Info=None).order_by('Inserted').last()
             if rhis:
                 req = Enif_Request.objects.get(ID=rhis.Request.ID, D=False)
-                #2. Intent aus dieser Herausnehmen
-                #3. Je nach Intent eine Funktion im Chatbot ansprechen
-                if req.Intent:
-                    self.intent_handler(s, req.Intent.ID)
-                else: 
-                    self.intent_handler(s, None)
+                ##2. Intent aus dieser Herausnehmen
+                ##3. Je nach Intent eine Funktion im Chatbot ansprechen
+                #if req.Intent:
+                #    self.intent_handler(s, req.Intent.ID)
+                #else: 
+                #    self.intent_handler(s, None)
         #5. komplette His rendern
         res["Enif"]["Messages"] = self.his_renderer(s)
         if mes and req.Predict == True and req.Intent.Tag in ['contact', 'invoice']:
@@ -122,7 +122,6 @@ class Chatbot_Api(APIView):
 
     def intent_handler(self, session, intent):
         #4. Die Antwort auf den Intent in die His schreiben
-        intent = Intent.objects.get(ID=intent, D=False)
         intent_tag = intent.Tag
         try:
             options = Enif_Intent_Answer.objects.filter(Intent=intent, D=False)
@@ -188,6 +187,7 @@ class Chatbot_Api(APIView):
             return
 
     def error_msg(self, session, msg="Etwas ist schiefgelaufen. Bitte versuche es später erneut"):
+        log.warning("Session: {} Error-Msg: {}".format(session.Token, msg))
         his = Enif_Session_History(Session=session, Enif_Info=msg)
         his.save()
 
@@ -421,14 +421,19 @@ class Enif_Request_Api(APIView):
             log.error(serializer.errors)
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if enif_r.Predict:
+            log.debug("Prediction")
             prediction = Chatbot_Api().do_predict(enif_r)
+            log.debug(prediction)
             if prediction["Intent"]:
                 i = Intent.objects.get(ID=prediction['Intent'])
                 enif_r.Intent = i
+            else:
+                i = None
             enif_r.Intent_Accuracy= prediction['ACCURACY']
             enif_r.save()
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
+            Chatbot_Api().intent_handler(s, i)
         else:
             if rdata['Inputs']:
                 log.info('Input-Handler')
