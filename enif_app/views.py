@@ -429,12 +429,9 @@ class Enif_Request_Api(APIView):
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
         else:
-            log.info('No Prediction')
-            data = rdata.dict()
-            #Input Handling
-            log.info("Über mir sollte eigentlich das rdata stehen")
-            log.info("Unter mir das Python dict")
-            log.info(data)
+            post_data = dict(request.POST.lists())
+            log.debug("Hallo")
+            log.debug(post_data)
             if rdata['Inputs']:
                 log.info('Input-Handler')
                 i = Intent.objects.get(ID=rdata['Intent'])
