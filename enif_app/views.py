@@ -434,13 +434,19 @@ class Enif_Request_Api(APIView):
             log.info(rdata['Inputs'])
             if rdata['Inputs']:
                 log.info('Input-Handler')
-                i = Intent.objects.get(ID=rdata['Intent'])
-                enif_r.Intent = i
-                enif_r.Intent_Accuracy = 1
-                enif_r.save()
-                his = Enif_Session_History(Session=s, Request=enif_r)
-                his.save()
-                Chatbot_Api().input_handler(s, i.Tag, rdata['Inputs'])
+                try:
+                    i = Intent.objects.get(ID=rdata['Intent'])
+                    enif_r.Intent = i
+                    enif_r.Intent_Accuracy = 1
+                    enif_r.save()
+                except:
+                    log.error('Fatal Error', exc_info=True)
+                try:
+                    his = Enif_Session_History(Session=s, Request=enif_r)
+                    his.save()
+                    Chatbot_Api().input_handler(s, i.Tag, rdata['Inputs'])
+                except:
+                    log.error('Fatal Error', exc_info=True)
             else:
                 #Option Handling
                 log.info('Option-Hanlder')
