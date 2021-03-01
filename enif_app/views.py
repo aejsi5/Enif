@@ -137,6 +137,7 @@ class Chatbot_Api(APIView):
             his.save()
 
     def input_handler(self, session_obj, intenttag, input_data):
+        log.info('Input_handler')
         log.debug(intenttag)
         log.debug(input_data)
         if intenttag == 'invoice':
@@ -407,29 +408,10 @@ class Enif_Request_Api(APIView):
         except Enif_Session.DoesNotExist:
             log.error('No valid Session found')
             return HttpResponse(status=404)
-        #rdata_im = request.data
-        try:
-            rdata = request.body
-            log.info('request.body')
-            log.info(rdata)
-        except:
-            pass
-        try:
-            rdata = request.POST
-            log.info('request.POST')
-            log.info(rdata)
-        except:
-            pass
-        try:
-            rdata = request.data
-            log.info('request.data')
-            log.info(rdata)
-        except:
-            pass
-        #rdata = rdata_im.copy()
+        rdata = request.data
+        log.info('request.data')
+        log.info(rdata)
         rdata['Session'] = s.ID
-        log.debug("nächste Zeile Requestdata")
-        log.debug(rdata)
         serializer = Full_Enif_Request_Serializer(data=rdata)
         if serializer.is_valid():
             enif_r = serializer.save()
