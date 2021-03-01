@@ -407,12 +407,6 @@ class Enif_Request_Api(APIView):
         except Enif_Session.DoesNotExist:
             log.error('No valid Session found')
             return HttpResponse(status=404)
-        data = request.body
-        log.info("Data")
-        log.info(data)
-        d = json.loads(data)
-        log.info("Obj")
-        log.info(d)
         rdata_im = request.data
         rdata = rdata_im.copy()
         rdata['Session'] = s.ID
@@ -436,12 +430,18 @@ class Enif_Request_Api(APIView):
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
         else:
-            data = request.body
+            data = request.data
             log.info("Data")
             log.info(data)
             d = json.loads(data)
             log.info("Obj")
-            log.info(d)
+            log.info(data)
+            data = request.POST
+            log.info("Data")
+            log.info(data)
+            d = json.loads(data)
+            log.info("Obj")
+            log.info(data)
             if rdata['Inputs']:
                 log.info('Input-Handler')
                 i = Intent.objects.get(ID=rdata['Intent'])
