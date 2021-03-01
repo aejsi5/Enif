@@ -407,8 +407,26 @@ class Enif_Request_Api(APIView):
         except Enif_Session.DoesNotExist:
             log.error('No valid Session found')
             return HttpResponse(status=404)
-        rdata_im = request.data
-        rdata = rdata_im.copy()
+        #rdata_im = request.data
+        try:
+            rdata = request.body
+            log.info('request.body')
+            log.info(rdata)
+        except:
+            pass
+        try:
+            rdata = request.POST
+            log.info('request.POST')
+            log.info(rdata)
+        except:
+            pass
+        try:
+            rdata = request.data
+            log.info('request.data')
+            log.info(rdata)
+        except:
+            pass
+        #rdata = rdata_im.copy()
         rdata['Session'] = s.ID
         log.debug("nächste Zeile Requestdata")
         log.debug(rdata)
