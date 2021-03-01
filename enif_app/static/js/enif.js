@@ -57,7 +57,7 @@ $(document).ready(function (){
         if(check_props(data)){
             console.log(data);
             console.log(intent);
-            E.post("Eingabe", false, null, intent, data);
+            E.post("*********", false, null, intent, data);
         };
     });
     $('.enif_privacy_accept').click(function(){
