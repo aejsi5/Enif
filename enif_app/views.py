@@ -86,9 +86,8 @@ class Chatbot_Api(APIView):
         if not mes:
             hello = self.say_hello(s)
         else:
-            print(mes)
             #1. Letzte human Request nehmen
-            rhis = Enif_Session_History.objects.filter(Session=s, D=False, Intent_Answer=None, Enif_System_Answer=None).order_by('Inserted').last()
+            rhis = Enif_Session_History.objects.filter(Session=s, D=False, Intent_Answer=None, Enif_System_Answer=None, Enif_Info=None).order_by('Inserted').last()
             if rhis:
                 req = Enif_Request.objects.get(ID=rhis.Request.ID, D=False)
                 #2. Intent aus dieser Herausnehmen
@@ -100,7 +99,7 @@ class Chatbot_Api(APIView):
         #5. komplette His rendern
         res["Enif"]["Messages"] = self.his_renderer(s)
         if mes and req.Intent.Tag in ['contact', 'invoice']:
-            res["Enif"]["Messages"].append(self.dialog(req.Intent.Tag))
+            res["Enif"]["Messages"].append(self.options(req.Intent.Tag))
         return Response(res, status=status.HTTP_200_OK)
 
     def his_renderer(self, session):
@@ -116,6 +115,8 @@ class Chatbot_Api(APIView):
                 res.append({"ID": h.pk, "Source": "Enif", "Message_Type": "PlainText", "Text": h.Intent_Answer.Answer, "Timestamp": h.Inserted})
             elif h.Enif_System_Answer:
                 res.append({"ID": h.pk, "Source": "Enif", "Message_Type": "PlainText", "Text": h.Enif_System_Answer.Answer, "Timestamp": h.Inserted})
+            elif h.Enif_Info:
+                res.append({"ID": h.pk, "Source": "Enif", "Message_Type": "PlainText", "Text": h.Enif_Info, "Timestamp": h.Inserted})
         return res
 
     def intent_handler(self, session, intent):
@@ -134,7 +135,60 @@ class Chatbot_Api(APIView):
             his = Enif_Session_History(Session=session, Enif_System_Answer=Ans)
             his.save()
 
-    def dialog(self, intenttag):
+    def input_handler(self, session_obj, intenttag, input_data):
+        log.debug(intenttag)
+        log.debug(input_data)
+        if intenttag == 'invoice':
+            try:
+                akz = input_data['enif_input_akz']
+                rg = Invoice_Api().normalize_invoice_no(input_data['enif_input_rechnungsnummer'])
+                log.debug(akz)
+                log.debug(rg)
+            except:
+                log.error("Invoice Inputs not set", exc_info=True)
+            try:
+                Inv = Invoices.objects.filter(AKZ=akz, Inv_No=rg).order_by('-ID')
+                if not Inv:
+                    Inv = Invoices.objects.filter(IKZ=akz, Inv_No=rg).order_by('-ID')
+                if not Inv:
+                    self.error_msg(session_obj, "Ich habe leider keine Rechnung gefunden. Bitte versuche es erneut.")
+            except:
+                log.error("Invoice not found", exc_info=True)
+            latest_Inv= Inv[0]
+            return self.disclosure(session_obj, intenttag, latest_Inv)
+
+    def disclosure(self, session_obj, intenttag, obj):
+        if intenttag == 'invoice':
+            try:
+                his = Enif_Session_History(Session=session_obj, Enif_Info="Ich habe deine Rechnung gefunden.")
+                his.save()
+            except:
+                log.error('Fatal Error', exc_info=True)
+            if obj['Inv_No'] and obj['Case'] and obj['Inv_Date']:
+                text = "Die Rechnung mit der Nummer {} (normalisiert) vom {} läuft bei uns unter der Vorgangsnummer {}".format(obj['Inv_No'], obj['Inv_Date'], obj['Case'])
+            elif obj['Inv_No'] and obj['Case'] and not obj['Inv_Date']:
+                text = "Die Rechnung mit der Nummer {} (normalisiert) läuft bei uns unter der Vorgangsnummer {}".format(obj['Inv_No'], obj['Case'])
+            try:
+                his = Enif_Session_History(Session=session_obj, Enif_Info=text)
+                his.save()
+            except:
+                log.error('Fatal Error', exc_info=True)
+            if obj['Exported']:
+                text = "Die Rechnung wurde bereits bearbeitet. Das Geld sollte in Kürze bei Ihnen eingehen."
+            elif obj['Status']:
+                text = "Die Rechnung befindet sich bei uns im Status {}. Bitte haben Sie noch etwas Geduld. Sollte die Rechnung überfällig sein können Sie sich gern an tim.rechnungen@dpdhl.com wenden."
+            try:
+                his = Enif_Session_History(Session=session_obj, Enif_Info=text)
+                his.save()
+            except:
+                log.error('Fatal Error', exc_info=True)
+            return
+
+    def error_msg(self, session, msg="Etwas ist schiefgelaufen. Bitte versuche es später erneut"):
+        his = Enif_Session_History(Session=session, Enif_Info=msg)
+        his.save()
+
+    def options(self, intenttag):
         if intenttag == "contact":
             return {
                 "ID": None,
@@ -193,7 +247,6 @@ class Chatbot_Api(APIView):
                         "Width": '45%'
                     }
                 ]}
-
 
     def do_predict(self, Enif_Request_Obj):
         base_dir = settings.MEDIA_ROOT
@@ -344,11 +397,13 @@ class Enif_Request_Api(APIView):
 
     def post(self, request, session=None, format=None):
         if not session:
+            log.error('No Session')
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
             actual = datetime.now()
             s = Enif_Session.objects.get(Token=session, D=False, Valid_Until__gte=actual)
         except Enif_Session.DoesNotExist:
+            log.error('No valid Session found')
             return HttpResponse(status=404)
         rdata_im = request.data
         rdata = rdata_im.copy()
@@ -368,19 +423,64 @@ class Enif_Request_Api(APIView):
                 enif_r.Intent = i
             enif_r.Intent_Accuracy= prediction['ACCURACY']
             enif_r.save()
+            his = Enif_Session_History(Session=s, Request=enif_r)
+            his.save()
         else:
-            i = Intent.objects.get(ID=rdata['Intent'])
-            enif_r.Intent = i
-            enif_r.Intent_Accuracy = 1
-            enif_r.save()
-        his = Enif_Session_History(Session=s, Request=enif_r)
-        his.save()
+            #Input Handling
+            if rdata['Inputs']:
+                log.info('Input-Handler')
+                i = Intent.objects.get(ID=rdata['Intent'])
+                enif_r.Intent = i
+                enif_r.Intent_Accuracy = 1
+                enif_r.save()
+                his = Enif_Session_History(Session=s, Request=enif_r)
+                his.save()
+                Chatbot_Api().input_handler(s, i.Tag, rdata['Inputs'])
+            else:
+                #Option Handling
+                log.info('Option-Hanlder')
+                i = Intent.objects.get(ID=rdata['Intent'])
+                enif_r.Intent = i
+                enif_r.Intent_Accuracy = 1
+                enif_r.save()
+                his = Enif_Session_History(Session=s, Request=enif_r)
+                his.save()
         r = Enif_Request.objects.get(Session=s, D=False, ID=enif_r.ID)
         serializer = Basic_Enif_Request_Serializer(r, many=False)
         res = {
             'data': serializer.data
         }
         return Response(res, status=status.HTTP_200_OK)
-        
 
+
+class Invoice_Api(APIView):
+    permission_classes = [WhitelistPermission]
+
+    def normalize(self, input_string):
+        res = input_string.replace(' ' , '')
+        res = res.replace('-' , '')
+        res = res.replace('_' , '')
+        res = res.replace('.' , '')
+        res = res.replace(':' , '')
+        res = res.replace(',' , '')
+        res = res.replace(';' , '')
+        res = res.replace('+' , '')
+        res = res.replace('#' , '')
+        res = res.replace('*' , '')
+        res = res.replace('~' , '')
+        res = res.replace('/' , '')
+        res = res.replace('!' , '')
+        res = res.replace('?' , '')
+        res = res.replace('"' , '')
+        res = res.replace("'" , '')
+        res = res.replace('§' , '')
+        res = res.replace('$' , '')
+        res = res.replace('%' , '')
+        res = res.replace('&' , '')
+        res = res.replace('(' , '')
+        res = res.replace(')' , '')
+        res = res.replace('=' , '')
+        res = res.replace('ß', 'ss')
+        res = res.upper()
+        return res
 

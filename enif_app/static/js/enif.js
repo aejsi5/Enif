@@ -50,7 +50,7 @@ $(document).ready(function (){
     });
     $(document).on("click", "div.enif_input_field_send", function(){
         var data = {}
-        var intent = $(this).attr('data_intent_id');
+        var intent = $(this).attr('data-intent_id');
         $('input.enif_input_field').each(function(){
             data[$(this).attr('name')] = $(this).val();
         });
@@ -68,7 +68,7 @@ $(document).ready(function (){
 });
 function check_props(obj){
     for(var key in obj){
-        if(obj[key] !== null || obj[key] != ""){
+        if(obj[key] == null || obj[key] == ""){
             return false;
         }
     }

@@ -306,7 +306,6 @@ body{
     flex-wrap: wrap;
 }
 div.enif_input_field{
-    width: 45%;
     margin-right: 2.5%;
     margin-left: 2.5%;
     margin-bottom: 6px;
@@ -335,6 +334,7 @@ input.enif_input_field:focus{
     width: 100%;
     height: 30px;
     display: flex;
+    margin-bottom: 18px;
 }
 .enif_input_field_send>span{
     display: inherit;

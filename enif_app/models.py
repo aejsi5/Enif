@@ -100,7 +100,7 @@ class Enif_Session(models.Model):
 class Enif_Request(models.Model):
     ID = models.AutoField('ID', primary_key=True)
     Session = models.ForeignKey(Enif_Session, on_delete=models.CASCADE)
-    Pattern = models.CharField('Pattern', max_length=50, null=False, blank=False)
+    Pattern = models.CharField('Pattern', max_length=100, null=False, blank=False)
     Predict = models.BooleanField('Verstehen', default=True)
     Intent = models.ForeignKey(Intent, on_delete=models.CASCADE, null=True, blank=True)
     Intent_Accuracy = models.FloatField('Genauigkeit', null=True, blank=True)
@@ -148,6 +148,7 @@ class Enif_Session_History(models.Model):
     Request = models.ForeignKey(Enif_Request, on_delete=models.CASCADE, null=True, blank=True)
     Intent_Answer = models.ForeignKey(Enif_Intent_Answer, on_delete=models.CASCADE, null=True, blank=True)
     Enif_System_Answer = models.ForeignKey(Enif_System_Answer, on_delete=models.CASCADE, null=True, blank=True)
+    Enif_Info = models.TextField('Info', null=True, blank=True)
     Inserted = models.DateTimeField('Angelegt am', auto_now_add=True)
     LU = models.DateTimeField('Geändert am', auto_now=True)
     D = models.BooleanField('Gelöscht', default=False)
@@ -158,3 +159,20 @@ class Enif_Session_History(models.Model):
     class Meta:
         app_label = "enif_app"
 
+class Invoices(models.Model):
+    ID = models.AutoField('ID', primary_key=True)
+    AKZ = models.CharField('Amtliches Kennzeichen', max_length=10, null=True, blank=True)
+    IKZ = models.CharField('Internes Kennzeichen', max_length=10, null=False, blank=False)
+    Case = models.CharField('Vorgangsnummer', max_length=10, null=False, blank=False)
+    Inv_Date = models.DateField('Rechnungsdatum', null=True, blank=True)
+    Inv_No = models.CharField('Rechnungsnummer', max_length=25, null=False, blank=False)
+    Price_net =  models.DecimalField('Preis netto',max_digits=6, decimal_places=2, null=True, blank=True)
+    Price_gros = models.DecimalField('Preis brutto',max_digits=6, decimal_places=2, null=True, blank=True)
+    Status = models.CharField('Status', max_length=25, null=True, blank=True)
+    Exported = models.BooleanField('Kreditorisch exportiert', default=False)
+
+    def __str__(self):
+        return str(self.ID)
+
+    class Meta:
+        app_label = "enif_app"
