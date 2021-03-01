@@ -453,6 +453,7 @@ class Enif_Request_Api(APIView):
                 enif_r.save()
                 his = Enif_Session_History(Session=s, Request=enif_r)
                 his.save()
+                Chatbot_Api().intent_handler(s, i)
         r = Enif_Request.objects.get(Session=s, D=False, ID=enif_r.ID)
         serializer = Basic_Enif_Request_Serializer(r, many=False)
         res = {
