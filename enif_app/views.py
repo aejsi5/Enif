@@ -99,7 +99,7 @@ class Chatbot_Api(APIView):
                     self.intent_handler(s, None)
         #5. komplette His rendern
         res["Enif"]["Messages"] = self.his_renderer(s)
-        if mes and req.Intent.Tag in ['contact', 'invoice']:
+        if mes and req.Predict and req.Intent.Tag in ['contact', 'invoice']:
             res["Enif"]["Messages"].append(self.options(req.Intent.Tag))
         return Response(res, status=status.HTTP_200_OK)
 
