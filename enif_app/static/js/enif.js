@@ -163,6 +163,8 @@ class Enif{
         $.ajax({
             type: 'POST',
             headers: { "X-CSRFToken": this.csrf },
+            dataType: 'json',
+            contentType: "application/json",
             data: data,
             url: '/api/v1/request/' + this.Session.Token + "/",
             success: function (result, status, xhr) {
