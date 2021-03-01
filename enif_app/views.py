@@ -430,12 +430,6 @@ class Enif_Request_Api(APIView):
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
         else:
-            data = request.data
-            log.info("Data")
-            log.info(data)
-            d = json.loads(data)
-            log.info("Obj")
-            log.info(data)
             data = request.POST
             log.info("Data")
             log.info(data)
