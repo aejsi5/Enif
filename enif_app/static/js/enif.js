@@ -49,13 +49,16 @@ $(document).ready(function (){
         E.post(text, false, null, intent);
     });
     $(document).on("click", "div.enif_input_field_send", function(){
-        console.log("clicked");
         var data = {}
+        var intent = $(this).attr('data_intent_id');
         $('input.enif_input_field').each(function(){
-            console.log($(this));
             data[$(this).attr('name')] = $(this).val();
-        })
-        console.log(data);
+        });
+        if(check_props(data)){
+            console.log(data);
+            console.log(intent);
+            E.post("Eingabe", false, null, intent, data);
+        };
     });
     $('.enif_privacy_accept').click(function(){
         E.initiate();
@@ -63,6 +66,14 @@ $(document).ready(function (){
         $('.enif_message_privacy').hide();
     });
 });
+function check_props(obj){
+    for(var key in obj){
+        if(obj[key] !== null || obj[key] != ""){
+            return false;
+        }
+    }
+    return true;
+}
 
 function getCookieValue(a) {
     var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
@@ -140,7 +151,7 @@ class Enif{
             timeout: 120000,
         });
     }
-    post(pattern, predict, user_feedback, intent = null) {
+    post(pattern, predict, user_feedback, intent = null, inputs=null) {
         this.check_session();
         let that = this;
         $('.enif_loader').removeClass('hide');
@@ -149,7 +160,7 @@ class Enif{
         $.ajax({
             type: 'POST',
             headers: { "X-CSRFToken": this.csrf },
-            data: { "Pattern": pattern, "Predict": predict, "Intent": intent, "User_Feedback": user_feedback},
+            data: { "Pattern": pattern, "Predict": predict, "Intent": intent, "Inputs": inputs, "User_Feedback": user_feedback},
             url: '/api/v1/request/' + this.Session.Token + "/",
             success: function (result, status, xhr) {
                 that.get()
@@ -207,8 +218,8 @@ class Enif{
         var $wrapper = $("<div class='enif_input_field_wrapper'></div>");
         var $markup = null;
         for (var i in input_fields) {
-            $markup = $("<div class='enif_input_field'>" +
-                "<input class='enif_input_field' type='' placeholder='' name='' data-intent_id=''></input>" +
+            $markup = $("<div class='enif_input_field' style='width:"+ input_fields[i].Width +";'>" +
+                "<input class='enif_input_field' type='' placeholder='' name=''></input>" +
                 "</div>");
             $markup.find('input.enif_input_field').attr('type', input_fields[i].Type);
             $markup.find('input.enif_input_field').attr('placeholder', input_fields[i].Placeholder);
@@ -216,7 +227,7 @@ class Enif{
             $markup.find('input.enif_input_field').attr('data-intent_id', input_fields[i].Intent);
             $wrapper.append($markup);
         }
-        $wrapper.append($('<div class="enif_input_field_send"><span>Senden</span></div>'))
+        $wrapper.append($('<div class="enif_input_field_send" data-intent_id="'+ input_fields[i].Intent+'"><span>Senden</span></div>'))
         return $wrapper
     }
     render(){
