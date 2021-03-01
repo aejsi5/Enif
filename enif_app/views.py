@@ -20,6 +20,7 @@ from .preprocessing import *
 from datetime import datetime, timedelta
 from decimal import Decimal
 import logging
+import json
 log = logging.getLogger(__name__)
 
 # Create your views here.
@@ -429,7 +430,12 @@ class Enif_Request_Api(APIView):
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
         else:
-            log.info(request.POST.get('Inputs'))
+            data = request.body
+            log.info("Data")
+            log.info(data)
+            d = json.loads(data)
+            log.info("Obj")
+            log.info(d)
             if rdata['Inputs']:
                 log.info('Input-Handler')
                 i = Intent.objects.get(ID=rdata['Intent'])
