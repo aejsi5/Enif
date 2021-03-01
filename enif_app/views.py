@@ -432,7 +432,6 @@ class Enif_Request_Api(APIView):
             log.info('No Prediction')
             data = rdata.dict()
             #Input Handling
-            log.info(rdata['Inputs'])
             log.info("Über mir sollte eigentlich das rdata stehen")
             log.info("Unter mir das Python dict")
             log.info(data)
