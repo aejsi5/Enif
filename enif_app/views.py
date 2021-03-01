@@ -409,6 +409,7 @@ class Enif_Request_Api(APIView):
         rdata_im = request.data
         rdata = rdata_im.copy()
         rdata['Session'] = s.ID
+        log.debug("nächste Zeile Requestdata")
         log.debug(rdata)
         serializer = Full_Enif_Request_Serializer(data=rdata)
         if serializer.is_valid():

@@ -152,6 +152,7 @@ class Enif{
         });
     }
     post(pattern, predict, user_feedback, intent = null, inputs=null) {
+        console.log({"Pattern": pattern, "Predict": predict, "Intent": intent, "Inputs": inputs, "User_Feedback": user_feedback })
         this.check_session();
         let that = this;
         $('.enif_loader').removeClass('hide');
