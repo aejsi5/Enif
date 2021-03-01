@@ -153,6 +153,8 @@ class Enif{
     }
     post(pattern, predict, user_feedback, intent = null, inputs=null) {
         console.log({"Pattern": pattern, "Predict": predict, "Intent": intent, "Inputs": inputs, "User_Feedback": user_feedback })
+        var data = JSON.stringify({"Pattern": pattern, "Predict": predict, "Intent": intent, "Inputs": inputs, "User_Feedback": user_feedback})
+        console.log(data)
         this.check_session();
         let that = this;
         $('.enif_loader').removeClass('hide');
@@ -161,7 +163,7 @@ class Enif{
         $.ajax({
             type: 'POST',
             headers: { "X-CSRFToken": this.csrf },
-            data: { "Pattern": pattern, "Predict": predict, "Intent": intent, "Inputs": inputs, "User_Feedback": user_feedback},
+            data: data,
             url: '/api/v1/request/' + this.Session.Token + "/",
             success: function (result, status, xhr) {
                 that.get()

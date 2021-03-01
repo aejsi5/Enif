@@ -398,7 +398,6 @@ class Enif_Request_Api(APIView):
             return Response(res)
 
     def post(self, request, session=None, format=None):
-        log.info(request.body)
         if not session:
             log.error('No Session')
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -431,12 +430,6 @@ class Enif_Request_Api(APIView):
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
         else:
-            data = request.POST
-            log.info("Data")
-            log.info(data)
-            d = json.loads(data)
-            log.info("Obj")
-            log.info(data)
             if rdata['Inputs']:
                 log.info('Input-Handler')
                 i = Intent.objects.get(ID=rdata['Intent'])
