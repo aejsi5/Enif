@@ -141,7 +141,7 @@ class Chatbot_Api(APIView):
         if intenttag == 'invoice':
             try:
                 akz = input_data['enif_input_akz']
-                rg = Invoice_Api().normalize_invoice_no(input_data['enif_input_rechnungsnummer'])
+                rg = Invoice_Api().normalize(input_data['enif_input_rechnungsnummer'])
                 log.debug(akz)
                 log.debug(rg)
             except:
