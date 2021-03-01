@@ -398,6 +398,7 @@ class Enif_Request_Api(APIView):
             return Response(res)
 
     def post(self, request, session=None, format=None):
+        log.info(request.body)
         if not session:
             log.error('No Session')
             return Response(status=status.HTTP_400_BAD_REQUEST)
