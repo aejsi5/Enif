@@ -430,6 +430,7 @@ class Enif_Request_Api(APIView):
         else:
             log.info('No Prediction')
             #Input Handling
+            log.info(rdata['Inputs'])
             if rdata['Inputs']:
                 log.info('Input-Handler')
                 i = Intent.objects.get(ID=rdata['Intent'])
