@@ -152,6 +152,7 @@ class Chatbot_Api(APIView):
                     Inv = Invoices.objects.filter(IKZ=akz, Inv_No=rg).order_by('-ID')
                 if not Inv:
                     self.error_msg(session_obj, "Ich habe leider keine Rechnung gefunden. Bitte versuche es erneut.")
+                    return
             except:
                 log.error("Invoice not found", exc_info=True)
             latest_Inv= Inv[0]
@@ -408,6 +409,7 @@ class Enif_Request_Api(APIView):
         rdata_im = request.data
         rdata = rdata_im.copy()
         rdata['Session'] = s.ID
+        log.debug(rdata)
         serializer = Full_Enif_Request_Serializer(data=rdata)
         if serializer.is_valid():
             enif_r = serializer.save()
@@ -426,6 +428,7 @@ class Enif_Request_Api(APIView):
             his = Enif_Session_History(Session=s, Request=enif_r)
             his.save()
         else:
+            log.info('No Prediction')
             #Input Handling
             if rdata['Inputs']:
                 log.info('Input-Handler')
