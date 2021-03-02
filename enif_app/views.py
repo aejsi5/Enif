@@ -194,9 +194,9 @@ class Chatbot_Api(APIView):
             if obj.Exported:
                 text = "Die Rechnung wurde bereits bearbeitet. Das Geld sollte in Kürze bei Ihnen eingehen."
             elif obj.Status:
-                text = "Die Rechnung befindet sich bei uns im Status {}. Bitte haben Sie noch etwas Geduld. Sollte die Rechnung überfällig sein können Sie sich gern an tim.rechnungen@dpdhl.com wenden.".format(obj.Status)
+                text = "Die Rechnung befindet sich bei uns im Status {}. Bitte haben Sie noch etwas Geduld. Sollte die Rechnung überfällig sein können Sie sich gern an <a class='enif_text_a' href='mailto:tim.rechnungen@dpdhl.com'>uns </a> wenden.".format(obj.Status)
             elif not obj.Exported or not obj.Status:
-                text: "Leider liegt mir zu dieser Rechnung noch kein Bearbeitungsstatus vor. Bitte versuche es morgen noch einmal. Du kannst dich auch gern an tim.rechnungen@dpdhl.com wenden."
+                text: "Leider liegt mir zu dieser Rechnung noch kein Bearbeitungsstatus vor. Bitte versuche es morgen noch einmal. Du kannst dich auch gern an <a class='enif_text_a' href='mailto:tim.rechnungen@dpdhl.com'>uns </a> wenden."
             try:
                 his = Enif_Session_History(Session=session_obj, Enif_Info=text)
                 his.save()
