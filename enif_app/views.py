@@ -93,7 +93,7 @@ class Chatbot_Api(APIView):
                 req = Enif_Request.objects.get(ID=rhis.Request.ID, D=False)
         #His rendern
         res["Enif"]["Messages"] = self.his_renderer(s)
-        if mes and req.Predict == True and req.Intent.Tag in ['contact', 'invoice', 'carinfo']:
+        if mes and req.Intent.Tag in ['contact', 'invoice', 'carinfo']:
             res["Enif"]["Messages"].append(self.options(req.Intent.Tag))
         elif not mes:
             res["Enif"]["Messages"].append(self.options('hello'))
