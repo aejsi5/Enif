@@ -157,28 +157,37 @@ class Chatbot_Api(APIView):
             except:
                 log.error("Invoice not found", exc_info=True)
             latest_Inv= Inv[0]
+            log.info("Invoice found:")
+            log.info(latest_Inv)
             return self.disclosure(session_obj, intenttag, latest_Inv)
 
     def disclosure(self, session_obj, intenttag, obj):
+        log.debug("Params")
+        log.debug(session_obj)
+        log.debug(intenttag)
+        log.debug(obj)
         if intenttag == 'invoice':
+            log.debug("Invoice erkannt")
             try:
                 his = Enif_Session_History(Session=session_obj, Enif_Info="Ich habe deine Rechnung gefunden.")
                 his.save()
             except:
                 log.error('Fatal Error', exc_info=True)
-            if obj['Inv_No'] and obj['Case'] and obj['Inv_Date']:
-                text = "Die Rechnung mit der Nummer {} (normalisiert) vom {} läuft bei uns unter der Vorgangsnummer {}".format(obj['Inv_No'], obj['Inv_Date'], obj['Case'])
-            elif obj['Inv_No'] and obj['Case'] and not obj['Inv_Date']:
-                text = "Die Rechnung mit der Nummer {} (normalisiert) läuft bei uns unter der Vorgangsnummer {}".format(obj['Inv_No'], obj['Case'])
+            if obj.Inv_No and obj.Case and obj.Inv_Date:
+                text = "Die Rechnung mit der Nummer {} (normalisiert) vom {} läuft bei uns unter der Vorgangsnummer {}".format(obj.Inv_No, obj.Inv_Date, obj.Case)
+            elif obj.Inv_No and obj.Case and not obj.Inv_Date:
+                text = "Die Rechnung mit der Nummer {} (normalisiert) läuft bei uns unter der Vorgangsnummer {}".format(obj.Inv_No, obj.Case)
             try:
                 his = Enif_Session_History(Session=session_obj, Enif_Info=text)
                 his.save()
             except:
                 log.error('Fatal Error', exc_info=True)
-            if obj['Exported']:
+            if obj.Exported:
                 text = "Die Rechnung wurde bereits bearbeitet. Das Geld sollte in Kürze bei Ihnen eingehen."
-            elif obj['Status']:
+            elif obj.Status:
                 text = "Die Rechnung befindet sich bei uns im Status {}. Bitte haben Sie noch etwas Geduld. Sollte die Rechnung überfällig sein können Sie sich gern an tim.rechnungen@dpdhl.com wenden."
+            else:
+                text: "Leider liegt mir zu dieser Rechnung noch kein Bearbeitungsstatus vor. Bitte versuche es morgen noch einmal. Du kannst dich auch gern an tim.rechnungen@dpdhl.com wenden."
             try:
                 his = Enif_Session_History(Session=session_obj, Enif_Info=text)
                 his.save()
