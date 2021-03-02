@@ -184,7 +184,7 @@ class Enif{
                         "<span class='enif_message_info'></span>" +
                         "<i class='fas fa-sort-down enif_message_arrow'></i>" +
                         "</div></div>");
-        $markup.find('.enif_message_text').text(text);
+        $markup.find('.enif_message_text').html(text);
         if(timestamp){
             var d = new Date(timestamp)
             var t = d.toLocaleTimeString();
