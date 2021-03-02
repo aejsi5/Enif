@@ -91,15 +91,9 @@ class Chatbot_Api(APIView):
             rhis = Enif_Session_History.objects.filter(Session=s, D=False, Intent_Answer=None, Enif_System_Answer=None, Enif_Info=None).order_by('Inserted').last()
             if rhis:
                 req = Enif_Request.objects.get(ID=rhis.Request.ID, D=False)
-                ##2. Intent aus dieser Herausnehmen
-                ##3. Je nach Intent eine Funktion im Chatbot ansprechen
-                #if req.Intent:
-                #    self.intent_handler(s, req.Intent.ID)
-                #else: 
-                #    self.intent_handler(s, None)
-        #5. komplette His rendern
+        #His rendern
         res["Enif"]["Messages"] = self.his_renderer(s)
-        if mes and req.Predict == True and req.Intent.Tag in ['contact', 'invoice']:
+        if mes and req.Predict == True and req.Intent.Tag in ['contact', 'invoice', 'carinfo']:
             res["Enif"]["Messages"].append(self.options(req.Intent.Tag))
         return Response(res, status=status.HTTP_200_OK)
 
@@ -143,8 +137,6 @@ class Chatbot_Api(APIView):
             try:
                 akz = input_data['enif_input_akz']
                 rg = Invoice_Api().normalize(input_data['enif_input_rechnungsnummer'])
-                log.debug(akz)
-                log.debug(rg)
             except:
                 log.error("Invoice Inputs not set", exc_info=True)
             try:
@@ -157,9 +149,25 @@ class Chatbot_Api(APIView):
             except:
                 log.error("Invoice not found", exc_info=True)
             latest_Inv= Inv[0]
-            log.info("Invoice found:")
-            log.info(latest_Inv)
             return self.disclosure(session_obj, intenttag, latest_Inv)
+        elif intenttag == 'carinfo':
+            try:
+                vin = input_data['enif_input_vin']
+            except:
+                log.error("Invoice Inputs not set", exc_info=True)
+            try:
+                Car = Vehicle.objects.filter(AKZ=vin).order_by('-ID')
+                if not Car:
+                    Car = Vehicle.objects.filter(IKZ=vin).order_by('-ID')
+                if not Car:
+                    Car = Vehicle.objects.filter(FIN=vin).order_by('-ID')
+                if not Car:
+                    self.error_msg(session_obj, "Ich habe leider kein Fahrzeug gefunden. Bitte versuche es erneut.")
+                    return
+            except:
+                log.error("Vehicle not found", exc_info=True)
+            last_Car= Car[0]
+            return self.disclosure(session_obj, intenttag, last_Car)
 
     def disclosure(self, session_obj, intenttag, obj):
         log.debug("Params")
@@ -167,7 +175,6 @@ class Chatbot_Api(APIView):
         log.debug(intenttag)
         log.debug(obj)
         if intenttag == 'invoice':
-            log.debug("Invoice erkannt")
             try:
                 his = Enif_Session_History(Session=session_obj, Enif_Info="Ich habe deine Rechnung gefunden.")
                 his.save()
@@ -184,9 +191,9 @@ class Chatbot_Api(APIView):
                 log.error('Fatal Error', exc_info=True)
             if obj.Exported:
                 text = "Die Rechnung wurde bereits bearbeitet. Das Geld sollte in Kürze bei Ihnen eingehen."
-            elif obj.Status or obj.Status != "":
+            elif obj.Status:
                 text = "Die Rechnung befindet sich bei uns im Status {}. Bitte haben Sie noch etwas Geduld. Sollte die Rechnung überfällig sein können Sie sich gern an tim.rechnungen@dpdhl.com wenden.".format(obj.Status)
-            elif not obj.Exported or not obj.Status or obj.Status =="":
+            elif not obj.Exported or not obj.Status:
                 text: "Leider liegt mir zu dieser Rechnung noch kein Bearbeitungsstatus vor. Bitte versuche es morgen noch einmal. Du kannst dich auch gern an tim.rechnungen@dpdhl.com wenden."
             try:
                 his = Enif_Session_History(Session=session_obj, Enif_Info=text)
@@ -194,6 +201,24 @@ class Chatbot_Api(APIView):
             except:
                 log.error('Fatal Error', exc_info=True)
             return
+        elif intenttag == 'carinfo':
+            try:
+                his = Enif_Session_History(Session=session_obj, Enif_Info="Ich habe das Fahrzeug gefunden.")
+                his.save()
+            except:
+                log.error('Fatal Error', exc_info=True)
+            try:
+                text = '<table class="enif_tbl"><tr><td>AKZ:</td><td>'+ str(obj.AKZ) +'</td><td>IKZ:</td><td>' + str(obj.IKZ) + '</td></tr><tr><td>FIN:</td><td>' + str(obj.FIN) +'</td></tr><tr><td>Hersteller:</td><td>' + str(obj.Make) + '</td></tr><tr><td>Modell:</td><td>' + str(obj.Model) + '</td></tr><tr><td>Baujahr:</td><td>' + str(obj.Baujahr) + '</td></tr><tr><td>Servicevetrag:</td><td>' + str(obj.Servicevertrag) + '</td></tr><tr><td>Servicevertragsgeber:</td><td>' + str(obj.Servicevertragsgeber) + '</td></tr><tr><td>Reifenvertrag</td><td>' + str(obj.Reifenvertrag) + '</td></tr><tr><td>Reifendienstleister</td><td>' + str(obj.Reifendienstleister) + '</td></tr><tr><td>Bereifung:</td><td>' + str(obj.Bereifung) + '</td></tr></table>'
+            except:
+                log.error('Fatal Error', exc_info=True)
+                return
+            try:
+                his = Enif_Session_History(Session=session_obj, Enif_Info=text)
+                his.save()
+            except:
+                log.error('Fatal Error', exc_info=True)
+            return
+            
 
     def error_msg(self, session, msg="Etwas ist schiefgelaufen. Bitte versuche es später erneut"):
         log.warning("Session: {} Error-Msg: {}".format(session.Token, msg))
@@ -238,6 +263,38 @@ class Chatbot_Api(APIView):
                         "Symbol": "fas fa-file-invoice-dollar"
                     }
             ]}
+        elif intenttag == 'hello':
+            return {
+                "ID": None,
+                "Source": "Enif",
+                "Message_Type": "Options",
+                "Options": [
+                    {
+                        "Text": "Kontakt",
+                        "Intent": 7,
+                        "Symbol": "fas fa-phone"
+                    },
+                    {
+                        "Text": "Rechnungsstatus",
+                        "Intent": 18,
+                        "Symbol": "fas fa-file-invoice-dollar"
+                    },
+                    {
+                        "Text": "Fahrzeuginfos",
+                        "Intent": 19,
+                        "Symbol": "fas fa-car-side"
+                    },
+                    {
+                        "Text": "Chatbot",
+                        "Intent": 4,
+                        "Symbol": "fas fa-robot"
+                    },
+                    {
+                        "Text": "Feedback",
+                        "Intent": 21,
+                        "Symbol": "fas fa-car-side"
+                    }
+            ]}
         elif intenttag == 'invoice':
             return {
                 "ID": None,
@@ -257,6 +314,20 @@ class Chatbot_Api(APIView):
                         "Type": "text",
                         "Name": "enif_input_rechnungsnummer",
                         "Width": '45%'
+                    }
+                ]}
+        elif intenttag == 'carinfo':
+            return {
+                "ID": None,
+                "Source": "Enif",
+                "Message_Type": "Inputs",
+                "Inputs": [
+                    {
+                        "Placeholder": "AKZ/IKZ/FIN",
+                        "Intent": 19,
+                        "Type": 'Text',
+                        "Name": "enif_input_vi",
+                        "Width": '95%'
                     }
                 ]}
 
@@ -315,6 +386,7 @@ class Chatbot_Api(APIView):
             his = Enif_Session_History(Session=Session, Enif_System_Answer=Ans)
             his.save()
             res.append({"ID": his.pk, "Source": "Enif", "Text": Ans.Answer, "Timestamp": his.Inserted})
+            res.append(self.options('hello')
             return res
         except Enif_System_Answer.DoesNotExist:
             return [res.append({"ID": None, "Source": "Enif", "Text": "Hallo, wie kann ich helfen?", "Timestamp": current})]
@@ -430,9 +502,7 @@ class Enif_Request_Api(APIView):
             log.error(serializer.errors)
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if enif_r.Predict:
-            log.debug("Prediction")
             prediction = Chatbot_Api().do_predict(enif_r)
-            log.debug(prediction)
             if prediction["Intent"]:
                 i = Intent.objects.get(ID=prediction['Intent'])
                 enif_r.Intent = i
@@ -445,7 +515,6 @@ class Enif_Request_Api(APIView):
             Chatbot_Api().intent_handler(s, i)
         else:
             if rdata['Inputs']:
-                log.info('Input-Handler')
                 i = Intent.objects.get(ID=rdata['Intent'])
                 enif_r.Intent = i
                 enif_r.Intent_Accuracy = 1
@@ -455,7 +524,6 @@ class Enif_Request_Api(APIView):
                 Chatbot_Api().input_handler(s, i.Tag, rdata['Inputs'])
             else:
                 #Option Handling
-                log.info('Option-Hanlder')
                 i = Intent.objects.get(ID=rdata['Intent'])
                 enif_r.Intent = i
                 enif_r.Intent_Accuracy = 1

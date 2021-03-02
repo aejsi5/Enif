@@ -176,3 +176,23 @@ class Invoices(models.Model):
 
     class Meta:
         app_label = "enif_app"
+
+class Vehicle(models.Model):
+    ID = models.AutoField('ID', primary_key=True)
+    AKZ = models.CharField('Amtliches Kennzeichen', max_length=10, null=True, blank=True)
+    IKZ = models.CharField('Internes Kennzeichen', max_length=10, null=False, blank=False)
+    FIN = models.CharField('FIN', max_length=20, null=True, blank=True)
+    Make = models.CharField('Hersteller', max_length=20, null=True, blank=True)
+    Model = models.CharField('Modell', max_length=20, null=True, blank=True)
+    Baujahr = models.CharField('Baujahr', max_length=4, null=True, blank=True)
+    Servicevertrag = models.CharField('Servicevertrag', max_length=20, null=True, blank=True)
+    Servicevertragsgeber = models.CharField('Servicevertraggeber', max_length=20, null=True, blank=True)
+    Reifenvertrag = models.CharField('Reifenvertrag', max_length=20, null=True, blank=True)
+    Reifendienstleister = models.CharField('Reifendienstleister', max_length=50, null=True, blank=True)
+    Bereifung = models.CharField('Vorgesehene Bereifung', max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.IKZ)
+
+    class Meta:
+        app_label = "enif_app"
