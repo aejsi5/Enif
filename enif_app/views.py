@@ -118,13 +118,13 @@ class Chatbot_Api(APIView):
 
     def intent_handler(self, session, intent):
         #4. Die Antwort auf den Intent in die His schreiben
-        intent_tag = intent.Tag
         try:
+            intent_tag = intent.Tag
             options = Enif_Intent_Answer.objects.filter(Intent=intent, D=False)
             i = random.choice(options)
             his = Enif_Session_History(Session=session, Intent_Answer=i)
             his.save()
-        except IndexError:
+        except:
             not_understood =[10,11,12]
             i = random.choice(not_understood)
             Ans = Enif_System_Answer.objects.get(ID=i, D=False)
@@ -154,7 +154,7 @@ class Chatbot_Api(APIView):
             return self.disclosure(session_obj, intenttag, latest_Inv)
         elif intenttag == 'carinfo':
             try:
-                vin = input_data['enif_input_vi']
+                vin = input_data['enif_input_vi'].upper()
             except:
                 log.error("Invoice Inputs not set", exc_info=True)
             try:
