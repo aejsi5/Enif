@@ -386,7 +386,7 @@ class Chatbot_Api(APIView):
             his = Enif_Session_History(Session=Session, Enif_System_Answer=Ans)
             his.save()
             res.append({"ID": his.pk, "Source": "Enif", "Text": Ans.Answer, "Timestamp": his.Inserted})
-            res.append(self.options('hello')
+            res.append(self.options('hello'))
             return res
         except Enif_System_Answer.DoesNotExist:
             return [res.append({"ID": None, "Source": "Enif", "Text": "Hallo, wie kann ich helfen?", "Timestamp": current})]
