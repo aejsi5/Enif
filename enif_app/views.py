@@ -95,6 +95,8 @@ class Chatbot_Api(APIView):
         res["Enif"]["Messages"] = self.his_renderer(s)
         if mes and req.Predict == True and req.Intent.Tag in ['contact', 'invoice', 'carinfo']:
             res["Enif"]["Messages"].append(self.options(req.Intent.Tag))
+        elif not mes:
+            res["Enif"]["Messages"].append(self.options('hello'))
         return Response(res, status=status.HTTP_200_OK)
 
     def his_renderer(self, session):
@@ -152,7 +154,7 @@ class Chatbot_Api(APIView):
             return self.disclosure(session_obj, intenttag, latest_Inv)
         elif intenttag == 'carinfo':
             try:
-                vin = input_data['enif_input_vin']
+                vin = input_data['enif_input_vi']
             except:
                 log.error("Invoice Inputs not set", exc_info=True)
             try:
@@ -386,7 +388,6 @@ class Chatbot_Api(APIView):
             his = Enif_Session_History(Session=Session, Enif_System_Answer=Ans)
             his.save()
             res.append({"ID": his.pk, "Source": "Enif", "Text": Ans.Answer, "Timestamp": his.Inserted})
-            res.append(self.options('hello'))
             return res
         except Enif_System_Answer.DoesNotExist:
             return [res.append({"ID": None, "Source": "Enif", "Text": "Hallo, wie kann ich helfen?", "Timestamp": current})]
