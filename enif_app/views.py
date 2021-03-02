@@ -210,7 +210,7 @@ class Chatbot_Api(APIView):
             except:
                 log.error('Fatal Error', exc_info=True)
             try:
-                text = '<table class="enif_tbl"><tr><td>AKZ:</td><td>'+ str(obj.AKZ) +'</td><td>IKZ:</td><td>' + str(obj.IKZ) + '</td></tr><tr><td>FIN:</td><td>' + str(obj.FIN) +'</td></tr><tr><td>Hersteller:</td><td>' + str(obj.Make) + '</td></tr><tr><td>Modell:</td><td>' + str(obj.Model) + '</td></tr><tr><td>Baujahr:</td><td>' + str(obj.Baujahr) + '</td></tr><tr><td>Servicevetrag:</td><td>' + str(obj.Servicevertrag) + '</td></tr><tr><td>Servicevertragsgeber:</td><td>' + str(obj.Servicevertragsgeber) + '</td></tr><tr><td>Reifenvertrag</td><td>' + str(obj.Reifenvertrag) + '</td></tr><tr><td>Reifendienstleister</td><td>' + str(obj.Reifendienstleister) + '</td></tr><tr><td>Bereifung:</td><td>' + str(obj.Bereifung) + '</td></tr></table>'
+                text = '<table class="enif_tbl"><tr><td>AKZ:</td><td>'+ str(obj.AKZ) +'</td></tr><tr><td>IKZ:</td><td>' + str(obj.IKZ) + '</td></tr><tr><td>FIN:</td><td>' + str(obj.FIN) +'</td></tr><tr><td>Hersteller:</td><td>' + str(obj.Make) + '</td></tr><tr><td>Modell:</td><td>' + str(obj.Model) + '</td></tr><tr><td>Baujahr:</td><td>' + str(obj.Baujahr) + '</td></tr><tr><td>Servicevetrag:</td><td>' + str(obj.Servicevertrag) + '</td></tr><tr><td>Mit:</td><td>' + str(obj.Servicevertragsgeber) + '</td></tr><tr><td>Reifenvertrag:</td><td>' + str(obj.Reifenvertrag) + '</td></tr><tr><td>Mit:</td><td>' + str(obj.Reifendienstleister) + '</td></tr><tr><td>Bereifung:</td><td>' + str(obj.Bereifung) + '</td></tr></table>'
             except:
                 log.error('Fatal Error', exc_info=True)
                 return

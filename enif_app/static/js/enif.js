@@ -48,13 +48,14 @@ $(document).ready(function (){
         var text = $(this).find('.enif_options_text').text();
         E.post(text, false, null, intent);
     });
-    $(document).on("click", "div.enif_input_field_send", function(){
+    $(document).on("click", "div.enif_input_field_send", function () {
         var data = {}
         var intent = $(this).attr('data-intent_id');
-        $('input.enif_input_field').each(function(){
+        var par = $(this).parent()
+        $(par).find('input.enif_input_field').each(function () {
             data[$(this).attr('name')] = $(this).val();
         });
-        if(check_props(data)){
+        if (check_props(data)) {
             console.log(data);
             console.log(intent);
             E.post("*********", false, null, intent, data);
