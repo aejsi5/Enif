@@ -508,7 +508,8 @@ class Enif_Request_Api(APIView):
                 i = Intent.objects.get(ID=prediction['Intent'])
                 enif_r.Intent = i
             else:
-                i = None
+                i = Intent.objects.get(ID=22)
+                enif_r.Intent = i
             enif_r.Intent_Accuracy= prediction['ACCURACY']
             enif_r.save()
             his = Enif_Session_History(Session=s, Request=enif_r)
